@@ -8,5 +8,6 @@ import com.devsuperior.DScatalog.entities.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-	//Camada de acesso a dados
+	
+	User findByEmail(String email);
 }
