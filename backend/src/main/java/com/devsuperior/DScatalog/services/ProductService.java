@@ -45,7 +45,7 @@ public class ProductService {
 	}
 
 	
-	@Transactional(readOnly = true)
+	@Transactional
 	public ProductDTO insert(ProductDTO dto) {
 		Product entity = new Product();
 		copyDtoToEntity(dto, entity);
@@ -55,17 +55,17 @@ public class ProductService {
 	}
 	
 
-	@Transactional(readOnly = true)
+	@Transactional
 	public ProductDTO update(Long id, ProductDTO dto) {
-		try	{
+		try {
 			Product entity = repository.getOne(id);
 			copyDtoToEntity(dto, entity);
 			entity = repository.save(entity);
 			return new ProductDTO(entity);
 		}
-		catch(EntityNotFoundException e) {
+		catch (EntityNotFoundException e) {
 			throw new ResourceNotFoundException("Id not found " + id);
-		}
+		}		
 	}
 
 	public void delete(Long id) {
