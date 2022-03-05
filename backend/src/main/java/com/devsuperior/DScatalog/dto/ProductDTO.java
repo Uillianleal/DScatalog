@@ -116,6 +116,6 @@ public class ProductDTO implements Serializable {
 		return categories;
 	}
 
-	
+
 	
 }

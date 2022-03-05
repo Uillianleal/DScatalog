@@ -18,7 +18,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
@@ -31,9 +33,11 @@ import com.devsuperior.DScatalog.services.ProductService;
 import com.devsuperior.DScatalog.services.exception.DatabaseException;
 import com.devsuperior.DScatalog.services.exception.ResourceNotFoundException;
 import com.devsuperior.DScatalog.tests.Factory;
+import com.devsuperior.DScatalog.tests.TokenUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@WebMvcTest(ProductResource.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 public class ProductResourceTest {
 
 	@Autowired
@@ -44,6 +48,12 @@ public class ProductResourceTest {
 
 	@Autowired
 	private ObjectMapper objectMapper;
+	
+	@Autowired 
+	private TokenUtil tokenUtil;
+	
+	private String username;
+	private String password;
 
 	private long existingId;
 	private long nonExistingId;
@@ -53,6 +63,8 @@ public class ProductResourceTest {
 
 	@BeforeEach
 	void setUp() throws Exception {
+		username = "maria@gmail.com";
+		password = "123456";
 		existingId = 1L;
 		nonExistingId = 2L;
 		dependentId = 3L;
@@ -60,7 +72,7 @@ public class ProductResourceTest {
 		productDto = Factory.creatProductDTO();
 		page = new PageImpl<>(List.of(productDto));
 
-		when(service.findAllPaged(ArgumentMatchers.any())).thenReturn(page);
+		when(service.findAllPaged(any(), any(), any())).thenReturn(page);
 		when(service.findById(existingId)).thenReturn(productDto);
 		when(service.findById(nonExistingId)).thenThrow(ResourceNotFoundException.class);
 
@@ -77,24 +89,40 @@ public class ProductResourceTest {
 	
 	@Test
 	public void deleteShouldReturnNoContentWhenIdExists() throws Exception {
-		ResultActions result = mockMvc.perform(delete("/products/{id}", existingId).accept(MediaType.APPLICATION_JSON));
-		result.andExpect(status().isNoContent());
+		
+		String accessToken = tokenUtil.obtainAccessToken(mockMvc, username, password);
+
+		
+		ResultActions result = mockMvc.perform(delete("/products/{id}", existingId)
+				.header("Authorization", "Bearer" + accessToken)
+				.accept(MediaType.APPLICATION_JSON));
+				result.andExpect(status().isNoContent());
 
 	}
 	
 	@Test
 	public void deleteShouldReturnNotFoundWhenIdDoesNotExists() throws Exception {
-		ResultActions result = mockMvc.perform(delete("/products/{id}", nonExistingId).accept(MediaType.APPLICATION_JSON));
-		result.andExpect(status().isNotFound());
+		
+		String accessToken = tokenUtil.obtainAccessToken(mockMvc, username, password);
+
+		ResultActions result = mockMvc.perform(delete("/products/{id}", nonExistingId)
+				.header("Authorization", "Bearer" + accessToken)
+				.accept(MediaType.APPLICATION_JSON));
+				result.andExpect(status().isNotFound());
 
 	}
 	
 
 	@Test
 	public void insertShoulReturnCreatedProductDTO() throws Exception {
+		
+		String accessToken = tokenUtil.obtainAccessToken(mockMvc, username, password);
+
 		String jsonBody = objectMapper.writeValueAsString(productDto);
 
-		ResultActions result = mockMvc.perform(post("/products").content(jsonBody)
+		ResultActions result = mockMvc.perform(post("/products")
+				.header("Authorization", "Bearer" + accessToken)
+				.content(jsonBody)
 				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON));
 
 		result.andExpect(status().isCreated());
@@ -105,11 +133,15 @@ public class ProductResourceTest {
 
 	@Test
 	public void updateShouldProductDTOWhenIdExists() throws Exception {
+		
+		String accessToken = tokenUtil.obtainAccessToken(mockMvc, username, password);
 
 		String jsonBody = objectMapper.writeValueAsString(productDto);
 
-		ResultActions result = mockMvc.perform(put("/products/{id}", existingId).content(jsonBody)
-		.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON));
+		ResultActions result = mockMvc.perform(put("/products/{id}", existingId)
+				.header("Authorization", "Bearer" + accessToken)
+				.content(jsonBody)
+				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON));
 
 		result.andExpect(status().isOk());
 		result.andExpect(jsonPath("$.id").exists());
@@ -119,10 +151,14 @@ public class ProductResourceTest {
 
 	@Test
 	public void updateShouldNotFoundWhenIdDoesNotExists() throws Exception {
+		
+		String accessToken = tokenUtil.obtainAccessToken(mockMvc, username, password);
 
 		String jsonBody = objectMapper.writeValueAsString(productDto);
 
-		ResultActions result = mockMvc.perform(put("/products/{id}", nonExistingId).content(jsonBody)
+		ResultActions result = mockMvc.perform(put("/products/{id}", nonExistingId)
+				.header("Authorization", "Bearer" + accessToken)
+				.content(jsonBody)
 				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON));
 
 		result.andExpect(status().isNotFound());
