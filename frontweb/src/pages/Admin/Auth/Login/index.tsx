@@ -25,14 +25,15 @@ const Login = () => {
   const { setAuthContextData } = useContext(AuthContext);
 
   const [hasError, setHasError] = useState(false);
+  
+  const history = useHistory();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>();
-  const history = useHistory();
-
+  
   const onSubmit = (formData: FormData) => {
     requestBackendLogin(formData)
       .then((response) => {
