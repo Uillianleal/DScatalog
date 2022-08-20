@@ -49,6 +49,9 @@
 }
 
 @media (min-width: 768px) {
+  .product-crud-card-top-container {
+    width: 200px;
+  }
   .product-crud-card {
     display: flex;
     justify-content: space-between;
