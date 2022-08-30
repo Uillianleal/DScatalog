@@ -42,7 +42,7 @@ ul {
 }
 
 .base-input:focus {
-  background-color: #fff;
+  background-color: unset;
   color: #000000;
 }
 
