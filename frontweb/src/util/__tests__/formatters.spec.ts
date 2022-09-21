@@ -19,18 +19,7 @@ describe('formatPrice for positive numbers', () => {
     });
 })
 
-describe('formatPrice for non-positive numbers', () => {
-    test('formatPrice should format number pt-BR when given 0', () => {
-        const value = 0;
-        const result = formatPrice(value);
-        expect(result).toEqual("0,00");
-    });
 
-    test('formatPrice should format number pt-BR when given -5.1', () => {
-        const value = -5.1;
-        const result = formatPrice(value);
-        expect(result).toEqual("-5,10");
-    });
-})
+
 
 
