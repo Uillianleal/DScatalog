@@ -9,14 +9,15 @@ afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
 test('should render Catalog with products', async () => {
-  render(
-    <Router history={history}>
-      <Catalog />
-    </Router>
-  );
-  expect(screen.getByText('Catálogo de produtos')).toBeInTheDocument();
+    render(
+        <Router history={history}>
+            <Catalog />
+        </Router>
+    );
 
-  await waitFor(() => {
-    expect(screen.getByText('Smart TV')).toBeInTheDocument();
-  });
+    expect(screen.getByText('Catálogo de produtos')).toBeInTheDocument();
+
+    await waitFor(() => {
+        expect(screen.getByText('Smart TV')).toBeInTheDocument();
+    });
 });
