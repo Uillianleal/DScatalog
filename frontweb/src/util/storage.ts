@@ -7,16 +7,16 @@ type LoginResponse = {
     expires_in: number;
     scope: string;
     userFirstName: string;
-    userId: number; 
+    userId: number;
 }
 
-export const saveAuthData = (obj : LoginResponse) => {
+export const saveAuthData = (obj: LoginResponse) => {
     localStorage.setItem(tokenKey, JSON.stringify(obj));
 }
 
-export const getAuthData = () =>{
+export const getAuthData = () => {
     const str = localStorage.getItem(tokenKey) ?? '{}';
-    return JSON.parse(str) as LoginResponse;    
+    return JSON.parse(str) as LoginResponse;
 }
 
 export const removeAuthData = () => {
