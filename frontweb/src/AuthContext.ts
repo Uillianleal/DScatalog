@@ -1,6 +1,7 @@
 import { createContext } from "react";
-import { TokenData } from "util/auth";
+
 import { } from "util/requests";
+import { TokenData } from "util/token";
 
 export type AuthContextData = {
     authenticated: boolean;
